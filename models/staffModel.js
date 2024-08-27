@@ -21,7 +21,7 @@ const Staff = sequelize.define(
       type: DataTypes.STRING(50),
       allowNull: false,
     },
-    position: {
+    positionAt: {
       type: DataTypes.STRING(100),
       allowNull: false,
     },

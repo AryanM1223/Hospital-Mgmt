@@ -1,15 +1,18 @@
 const express = require("express");
 const { registerPatient } = require("../controllers/patientController");
 const { login } = require("../controllers/authController");
+const { isAuthenticated, authorizeRoles } = require("../middlewares/auth");
+const { registerDoctor, registerStaff } = require("../controllers/adminController");
 
 const router = express.Router();
 
+router.route("/register/patient").post(registerPatient);
+router.route("/login").post(login);
 
-router.post("/register/patient", registerPatient);
-router.post("/login", login);
+router.route("/register/doctor")
+  .post(isAuthenticated, authorizeRoles(['Admin']), registerDoctor);
 
-
-router.post("/register/doctor", isAuthenticated, authorizeRoles(['Admin']), registerDoctor);
-router.post("/register/staff", isAuthenticated, authorizeRoles(['Admin']), registerStaff);
+router.route("/register/staff")
+  .post(isAuthenticated, authorizeRoles(['Admin']), registerStaff);
 
 module.exports = router;

@@ -1,43 +1,38 @@
+const ErrorHandler = require("../utils/errorHandler");
 const jwt = require("jsonwebtoken");
-const User = require("./models/userModel");
-const { verifyToken } = require("../utils/jwtToken");
+const User = require("../models/userModel");
 
 exports.isAuthenticated = async (req, res, next) => {
-  const { authorization } = req.headers;
   const { refreshToken } = req.cookies;
 
-  if (!authorization && !refreshToken) {
-    return res.status(401).json({ message: "Access denied. No token provided." });
+  const accessToken = req.headers["authorization"];
+
+  if (!accessToken && !refreshToken) {
+    return res.status(401).send("Access Denied. No token provided.");
   }
 
   try {
-    const token = authorization?.split(" ")[1]; 
-    const decoded = verifyToken(token, process.env.JWT_SECRET);
-    req.user = await User.findByPk(decoded.id);
+    const accessToken = token.substring(7);
+    const decodedData = jwt.verify(accessToken, process.env.JWT_SECRET);
+    req.user = await User.findById(decodedData.id);
     next();
-  } catch (err) {
+  } catch (error) {
     if (!refreshToken) {
-      return res.status(401).json({ message: "Access denied. No refresh token provided." });
+      return res.status(401).send("Access Denied. No refresh token provided.");
     }
 
     try {
-      const decoded = verifyToken(refreshToken, process.env.REFRESH_SECRET);
-      const user = await User.findByPk(decoded.id);
-      const newAccessToken = user.getJWTToken(process.env.JWT_EXPIRY, process.env.JWT_SECRET);
+      const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+      const user = await User.findById(decoded.id);
+      const accesstoken = user.getJWTToken(
+        process.env.JWT_EXPIRY,
+        process.env.JWT_SECRET
+      );
       req.user = user;
-      res.header("Authorization", newAccessToken);
+      res.header("Authorization", accesstoken);
       next();
     } catch (error) {
-      res.status(400).json({ message: "Invalid Token." });
+      return res.status(400).send("Invalid Token.");
     }
   }
-};
-
-exports.authorizeRoles = (roles) => {
-  return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ message: "Access denied" });
-    }
-    next();
-  };
 };

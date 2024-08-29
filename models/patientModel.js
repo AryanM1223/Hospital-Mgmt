@@ -1,50 +1,50 @@
-const { sequelize } = require("../config/database");
-const { DataTypes } = require("sequelize");
-const User = require('../userModel');  
+const { sequelize } = require('../config/db');
+const { DataTypes } = require('sequelize');
+const User = require('../models/userModel'); 
 
-const Patient = sequelize.define(
-  "patients",
-  {
-    userId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: User,
-        key: 'id',
-      },
-      allowNull: false,
+const Patient = sequelize.define('Patient', {
+  userId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: User, 
+      key: 'id',
     },
-    firstName: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-    },
-    lastName: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-    },
-    dob: {
-      type: DataTypes.DATEONLY,
-      allowNull: false,
-    },
-    gender: {
-      type: DataTypes.CHAR(1),
-      allowNull: true,
-      validate: {
-        isIn: [['Male', 'Female', 'Other']],
-      },
-    },
-    address: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    zipCode: {
-      type: DataTypes.STRING(10),
-      allowNull: true,
+    allowNull: false,
+  },
+  firstName: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+  },
+  lastName: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+  },
+  dob: {
+    type: DataTypes.DATEONLY,
+    allowNull: false,
+  },
+  gender: {
+    type: DataTypes.STRING(10),
+    allowNull: true,
+    validate: {
+      isIn: [['Male', 'Female', 'Other']],
     },
   },
-  {
-    timestamps: true,
-  }
-);
+  address: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  zipCode: {
+    type: DataTypes.STRING(10),
+    allowNull: true,
+  },
+  symptoms: { 
+    type: DataTypes.STRING(100),
+    allowNull: true,
+  },
+}, {
+  timestamps: true,
+});
 
 Patient.belongsTo(User, { foreignKey: 'userId' });
 

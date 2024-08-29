@@ -1,26 +1,21 @@
-const { Pool } = require('pg');
-const { activityLogger, errorLogger } = require('../utils/logger');
+const { Sequelize } = require('sequelize');
 
-
-
-const pool = new Pool({
-    user: 'postgres',
-    password: 'aryan',
-    host: 'localhost',
-    port: 6000,  
-    database: 'HospitalDb' 
+// Create a Sequelize instance
+const sequelize = new Sequelize('HospitalDb', 'postgres', 'aryan', {
+  host: 'localhost',
+  port: 6000,
+  dialect: 'postgres',
+  logging: false, // Set to true if you want to see SQL queries
 });
 
+// Test the connection
 (async () => {
-    try {
-        const client = await pool.connect();
-        activityLogger.info("Database connected");
-        console.log('Database connected successfully');
-        
-      
-        client.release();
-    } catch (error) {
-        errorLogger.error("Database connection failed:",error);
-        console.log('Database connection failed:', error);
-    }
+  try {
+    await sequelize.authenticate();
+    console.log('Database connected successfully');
+  } catch (error) {
+    console.error('Database connection failed:', error);
+  }
 })();
+
+module.exports = { sequelize };

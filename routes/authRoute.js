@@ -5,7 +5,7 @@ const {isAuthenticated} = require("../middleware/auth");
 
 
 router.post("/register-patient", registerPatient);
-router.get("/get-patient-detail",isAuthenticated,getPatientDetails);
+router.get("/get-patient-detail/:userId",getPatientDetails);
 
 
 module.exports = router;

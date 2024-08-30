@@ -11,7 +11,7 @@ const cors = require("cors");
 dotenv.config({ path: './config/config.env' });
 
 
-const CORS_URL = process.env.CORS_URL || "http://localhost:5171";
+const CORS_URL = process.env.CORS_URL || "http://localhost:3000";
 
 
 const app = express();

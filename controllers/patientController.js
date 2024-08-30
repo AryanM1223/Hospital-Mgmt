@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 
 
 exports.registerPatient = async(req,res)=>{
-const {username,email,password,firstName,lastName,dob,gender,address,zipCode,symtoms} = req.body;
+const {username,email,password,firstName,lastName,dob,gender,address,zipCode,symptoms} = req.body;
 try {
   const existingPatient = await User.findOne({ where: { username } });
     if(existingPatient){
@@ -29,17 +29,18 @@ try {
       gender,
       address,
       zipCode,
-      symtoms
+      symptoms
     });
-    return res.status(201).json(user);
+    return res.status(201).json({ user, patient });;
 } catch (error) {
   res.status(500).json({ msg: 'Error registering patient', error: error.errors ? error.errors.map(e => e.message) : error.message });
   }
 };
 
 exports.getPatientDetails = async (req, res) => {
+  const userId = req.params['userId'];
   try {
-    const patient = await Patient.findOne({ where: { userId: req.user.id } });
+    const patient = await Patient.findOne({ where: { userId } });
     if (!patient) return res.status(404).json({ message: "Patient not found" });
 
     res.status(200).json({ patient });

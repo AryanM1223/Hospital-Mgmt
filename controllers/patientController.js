@@ -4,50 +4,72 @@ const bcrypt = require('bcrypt');
 const { Sequelize } = require('sequelize');
 
 
-exports.registerPatient = async(req,res)=>{
-const {phoneNumber,email,password,firstName,lastName,dob,gender,address,zipCode} = req.body;
-try {
-  const existingPatient = await User.findOne({
-    where: {
-      [Sequelize.Op.or]: [
-        { email: email },
-        { phoneNumber: phoneNumber }
-      ]
-    }
-  });
-    if(existingPatient){
-      
-      return res.status(400).json({msg:"User is already registered"})
-    }
-    
-    const hashedpassword = await bcrypt.hash(password, 10);
-    user = await User.create(
-      {
-        phoneNumber,
-        email,
-        password:hashedpassword,
-        role:'Patient'
-      }
-    );
-
-    patient = await Patient.create({
-      userId: user.id,
+exports.registerPatient = async (req, res) => {
+  const {
+      phoneNumber,  
+      email,
+      password,
       firstName,
       lastName,
       dob,
       gender,
       address,
-      zipCode,
-      
-    });
-    
-    return res.status(201).json({ user, patient });;
-} catch (error) {
-  
- 
-  res.status(500).json({ msg: 'Error registering patient', error: error.errors ? error.errors.map(e => e.message) : error.message });
+      zipCode
+  } = req.body;
+
+  // Validate required fields
+  if (!phoneNumber || !email || !password || !firstName || !lastName || !dob || !gender || !address || !zipCode) {
+      return res.status(400).json({ msg: "All fields are required" });
+  }
+
+  try {
+      // Check if the user already exists
+      const existingPatient = await User.findOne({
+          where: {
+              [Sequelize.Op.or]: [
+                  { email },
+                  { phoneNumber: phoneNumber }  // Adjust to use 'phonenumber'
+              ]
+          }
+      });
+
+      if (existingPatient) {
+          return res.status(400).json({ msg: "User is already registered" });
+      }
+
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Create the user
+      const user = await User.create({
+          phoneNumber: phoneNumber,  // Use 'phonenumber' for the field name
+          email,
+          password: hashedPassword,
+          role: 'Patient'
+      });
+
+      // Create the patient profile
+      const patient = await Patient.create({
+          userId: user.id,
+          firstName,
+          lastName,
+          dob,
+          gender,
+          address,
+          zipCode
+      });
+
+      return res.status(201).json({ user, patient });
+
+  } catch (error) {
+      console.error('Error during patient registration:', error); // Debugging log
+      res.status(500).json({
+          msg: 'Error registering patient',
+          error: error.errors ? error.errors.map(e => e.message) : error.message
+      });
   }
 };
+
 
 exports.getPatientDetails = async (req, res) => {
   const userId = req.params['userId'];

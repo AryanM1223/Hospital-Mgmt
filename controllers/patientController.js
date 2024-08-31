@@ -17,18 +17,18 @@ exports.registerPatient = async (req, res) => {
       zipCode
   } = req.body;
 
-  // Validate required fields
+  
   if (!phoneNumber || !email || !password || !firstName || !lastName || !dob || !gender || !address || !zipCode) {
       return res.status(400).json({ msg: "All fields are required" });
   }
 
   try {
-      // Check if the user already exists
+     
       const existingPatient = await User.findOne({
           where: {
               [Sequelize.Op.or]: [
                   { email },
-                  { phoneNumber: phoneNumber }  // Adjust to use 'phonenumber'
+                  { phoneNumber: phoneNumber }  
               ]
           }
       });
@@ -37,18 +37,18 @@ exports.registerPatient = async (req, res) => {
           return res.status(400).json({ msg: "User is already registered" });
       }
 
-      // Hash the password
+    
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Create the user
+     
       const user = await User.create({
-          phoneNumber: phoneNumber,  // Use 'phonenumber' for the field name
+          phoneNumber: phoneNumber,  
           email,
           password: hashedPassword,
           role: 'Patient'
       });
 
-      // Create the patient profile
+ 
       const patient = await Patient.create({
           userId: user.id,
           firstName,
@@ -62,7 +62,7 @@ exports.registerPatient = async (req, res) => {
       return res.status(201).json({ user, patient });
 
   } catch (error) {
-      console.error('Error during patient registration:', error); // Debugging log
+   
       res.status(500).json({
           msg: 'Error registering patient',
           error: error.errors ? error.errors.map(e => e.message) : error.message

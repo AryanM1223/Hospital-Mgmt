@@ -1,9 +1,11 @@
+
 const express = require('express');
 const { Sequelize } = require('sequelize');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 const { activityLogger, errorLogger } = require('./utils/logger');
 const authRoute = require('./routes/authRoute');
+const adminRoute = require('./routes/adminRoute')
 const { sequelize } = require('./config/db'); 
 const cors = require("cors");
 
@@ -32,6 +34,8 @@ app.use((req, res, next) => {
 
 // Register Routes
 app.use('/auth', authRoute);
+app.use('/admin',adminRoute);
+
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

@@ -38,10 +38,7 @@ const Patient = sequelize.define('Patient', {
     type: DataTypes.STRING(10),
     allowNull: true,
   },
-  symptoms: { 
-    type: DataTypes.STRING(100),
-    allowNull: true,
-  },
+ 
 }, {
   timestamps: true,
 });

@@ -16,18 +16,18 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING(255),
     allowNull: false,
   },
-  role: {
-    type: DataTypes.ENUM('Patient', 'Doctor', 'Staff', 'Admin'),
-    allowNull: false,
-  },
   email: {
     type: DataTypes.STRING(100),
     unique: true,
     allowNull: true,
   },
-  phone: {
-    type: DataTypes.STRING(15),
-    allowNull: true,
+  profilePicUrl:{
+    type:DataTypes.STRING,
+    allowNull:false
+  },
+  isVerified:{
+    type:DataTypes.BOOLEAN,
+    defaultValue:false
   },
   createdAt: {
     type: DataTypes.DATE,

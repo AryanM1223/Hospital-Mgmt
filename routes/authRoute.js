@@ -1,11 +1,9 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { registerPatient, getPatientDetails } = require("../controllers/patientController");
-const {isAuthenticated} = require("../middleware/auth");
+const {loginUser,registerUser} = require('../controllers/authController');
+const isAUthenticated = require('../middleware/auth')
 
-
-router.post("/register-patient", registerPatient);
-router.get("/get-patient-detail/:userId",getPatientDetails);
-
+router.post("/register",registerUser);
+router.post("/login",loginUser);
 
 module.exports = router;
